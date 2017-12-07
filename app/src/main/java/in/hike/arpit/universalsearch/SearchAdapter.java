@@ -46,7 +46,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return dataSet == null ? 0 : dataSet.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

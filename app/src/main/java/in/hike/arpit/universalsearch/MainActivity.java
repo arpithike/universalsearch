@@ -12,10 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import in.hike.arpit.universalsearch.datasource.ChatDataSource;
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
-    private SearchRepository searchRepository = new SearchRepository(new RemoteDataSource(), new ChatDataSource()); //new ChatDataSource()
+    private SearchRepository searchRepository = new SearchRepository(new RemoteDataSource()); //new ChatDataSource()
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,14 +95,31 @@ public class MainActivity extends AppCompatActivity {
                     searchRepository.search(newText, new SearchRepository.ICallback() {
                         @Override
                         public void onSearchComplete(List<SearchItems> results) {
-                            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), results);
+                            if(mSectionsPagerAdapter == null) {
+                                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), results);
+                                mViewPager.setAdapter(mSectionsPagerAdapter);
+                            }
+                            else {
+                                mSectionsPagerAdapter.addItems(results);
+                            }
+                            mViewPager.setVisibility(View.VISIBLE);
                             mTabLayout.setVisibility(View.VISIBLE);
                             // Set up the ViewPager with the sections adapter.
-                            mViewPager.setAdapter(mSectionsPagerAdapter);
                         }
                     });
                 }
                 return true;
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                //mSectionsPagerAdapter.clear();
+                //mSectionsPagerAdapter.notifyDataSetChanged();
+                mViewPager.setVisibility(View.GONE);
+                mTabLayout.setVisibility(View.GONE);
+                return false;
             }
         });
         return true;
@@ -126,7 +146,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        List<SearchItems> items;
+        List<SearchItems> items = new ArrayList<>();
+        private SparseArray<SearchFragment> fragmentReference = new SparseArray<>();
+
 
         public SectionsPagerAdapter(FragmentManager fm, List<SearchItems> results) {
             super(fm);
@@ -137,13 +159,31 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return SearchFragment.newInstance(items.get(position).getItems());
+            SearchFragment fragment = SearchFragment.newInstance(items.get(position).getItems());
+            fragmentReference.put(position, fragment);
+            return fragment;
         }
 
+        public void addItems(List<SearchItems> items) {
+            for(int i = 0; i < items.size(); i++) {
+                if(items.get(i).getItems() != null) {
+                    if(fragmentReference.get(i) != null) {
+                        fragmentReference.get(i).addData(items.get(i).getItems());
+                    }
+                    else {
+                        Log.e("Arpit", "why is this null??");
+                    }
+                }
+            }
+        }
         @Override
         public int getCount() {
             // Show 3 total pages.
             return items.size();
+        }
+
+        public void clear(){
+            items.clear();
         }
 
         @Override

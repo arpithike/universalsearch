@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.hike.arpit.universalsearch.datasource.IDataSource;
+import in.hike.arpit.universalsearch.pojo.Item;
 import in.hike.arpit.universalsearch.pojo.SearchItems;
 import in.hike.arpit.universalsearch.pojo.SearchResults;
 
@@ -54,10 +55,24 @@ public class SearchRepository {
     }
 
     private List<SearchItems> buildSearchResult() {
+        SearchItems allItems = new SearchItems();
+        allItems.setCategory("ALL");
+
+        ArrayList<Item> items = new ArrayList<>();
+
+        allItems.setItems(items);
+
         List<SearchItems> combinedList = new ArrayList<>();
         for(SearchResults result :  results) {
             combinedList.addAll(result.getResults());
+            for(SearchItems item : result.getResults()) {
+                if(item.getItems() != null)
+                    items.addAll(item.getItems());
+            }
+
         }
+        combinedList.add(0, allItems);
+
         return combinedList;
     }
 }

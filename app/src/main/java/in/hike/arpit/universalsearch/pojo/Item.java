@@ -3,6 +3,7 @@ package in.hike.arpit.universalsearch.pojo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -35,7 +36,7 @@ public class Item implements Parcelable {
     private String url;
     @SerializedName("metadata")
     @Expose
-    private JsonObject metadata;
+    private JsonNull metadata;
     @SerializedName("subtitle")
     @Expose
     private String subtitle;

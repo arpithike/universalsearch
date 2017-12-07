@@ -1,5 +1,7 @@
 package in.hike.arpit.universalsearch.network;
 
+import android.util.ArrayMap;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -10,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,7 +42,9 @@ public class HTTPRequest<T> extends Request<T> {
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        return headers != null ? headers : super.getHeaders();
+        Map<String, String> header = new android.support.v4.util.ArrayMap<>();
+        header.put("Cookie", "user=uBZpRvId4bE=;UID=WbpJnA1ELwKvm5uC");
+        return header;
     }
 
     @Override

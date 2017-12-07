@@ -19,7 +19,7 @@ public class RemoteDataSource implements IDataSource {
             throw new IllegalArgumentException("callback can't be null");
         }
         HTTPRequest<SearchResults> httpRequest = new HTTPRequest<>(
-                "http://staging.im.hike.in/v2/search?query=kartikey",
+                "http://staging.im.hike.in/v2/search?from=0&query="+searchText,
                 SearchResults.class, null,
                 createResponseListener(callback),
                 null);

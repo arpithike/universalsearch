@@ -24,7 +24,7 @@ public class SearchFragment extends Fragment {
     private static final String ARG_DATA = "data";
 
     private RecyclerView mRecyclerView;
-    private List<Item> data;
+    private List<Item> data = new ArrayList<>();
 
     public SearchFragment() {
     }
@@ -49,8 +49,16 @@ public class SearchFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //mRecyclerView.setHasFixedSize(true);
-        data = getArguments().getParcelableArrayList(ARG_DATA);
+        ArrayList<Item> temp = getArguments().getParcelableArrayList(ARG_DATA);
+        if(temp != null)
+            data = temp;
         mRecyclerView.setAdapter(new SearchAdapter(data));
         return rootView;
+    }
+
+    public void addData(List<Item> items) {
+        data.clear();
+        data.addAll(items);
+        mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 }
