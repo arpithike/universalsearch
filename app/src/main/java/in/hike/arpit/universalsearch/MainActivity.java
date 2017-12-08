@@ -18,6 +18,7 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private DiscoveryFragment mFragment;
+    private FrameLayout frameLayout;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setVisibility(View.GONE);
         mTabLayout.setupWithViewPager(mViewPager);
-
+        frameLayout = (FrameLayout)findViewById(R.id.fragment_layout);
         if (savedInstanceState == null) {
             mFragment = new DiscoveryFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                             mViewPager.setVisibility(View.VISIBLE);
                             mTabLayout.setVisibility(View.VISIBLE);
+                            frameLayout.setVisibility(View.GONE);
+
                             // Set up the ViewPager with the sections adapter.
                         }
                     });
@@ -116,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 //mSectionsPagerAdapter.notifyDataSetChanged();
                 mViewPager.setVisibility(View.GONE);
                 mTabLayout.setVisibility(View.GONE);
+                frameLayout.setVisibility(View.VISIBLE);
                 return false;
             }
         });
