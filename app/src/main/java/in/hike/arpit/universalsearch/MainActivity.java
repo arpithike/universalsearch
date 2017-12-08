@@ -1,5 +1,6 @@
 package in.hike.arpit.universalsearch;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    private DiscoveryFragment mFragment;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -58,19 +59,15 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setVisibility(View.GONE);
         mTabLayout.setupWithViewPager(mViewPager);
+
+        if (savedInstanceState == null) {
+            mFragment = new DiscoveryFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.add(R.id.fragment_layout, mFragment).commit();
+        }
 
     }
 
@@ -189,6 +186,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return items.get(position).getCategory();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(((DiscoveryFragment)mFragment).onBackPress()) {
+            super.onBackPressed();
         }
     }
 
