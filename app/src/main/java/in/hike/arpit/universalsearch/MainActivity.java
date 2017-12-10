@@ -1,9 +1,11 @@
 package in.hike.arpit.universalsearch;
 
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,7 +25,6 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.hike.arpit.universalsearch.datasource.ChatDataSource;
 import in.hike.arpit.universalsearch.datasource.RemoteDataSource;
 import in.hike.arpit.universalsearch.pojo.SearchItems;
 
@@ -38,16 +39,12 @@ public class MainActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private DiscoveryFragment mFragment;
     private FrameLayout frameLayout;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
-    private TabLayout mTabLayout;
 
-    private SearchRepository searchRepository = new SearchRepository(new RemoteDataSource()); //new ChatDataSource()
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +55,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mViewPager = (ViewPager) findViewById(R.id.container);
 
-
-        mTabLayout = (TabLayout) findViewById(R.id.tabs);
-        mTabLayout.setVisibility(View.GONE);
-        mTabLayout.setupWithViewPager(mViewPager);
         frameLayout = (FrameLayout)findViewById(R.id.fragment_layout);
         if (savedInstanceState == null) {
             mFragment = new DiscoveryFragment();
@@ -77,53 +69,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
-        final SearchView searchView = (SearchView) myActionMenuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (TextUtils.isEmpty(newText)) {
-                } else {
-                    //Toast.makeText(MainActivity.this, "Search string : "+newText, Toast.LENGTH_LONG).show();
-                    searchRepository.search(newText, new SearchRepository.ICallback() {
-                        @Override
-                        public void onSearchComplete(List<SearchItems> results) {
-                            if(mSectionsPagerAdapter == null) {
-                                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), results);
-                                mViewPager.setAdapter(mSectionsPagerAdapter);
-                            }
-                            else {
-                                mSectionsPagerAdapter.addItems(results);
-                            }
-                            mViewPager.setVisibility(View.VISIBLE);
-                            mTabLayout.setVisibility(View.VISIBLE);
-                            frameLayout.setVisibility(View.GONE);
-
-                            // Set up the ViewPager with the sections adapter.
-                        }
-                    });
-                }
-                return true;
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                //mSectionsPagerAdapter.clear();
-                //mSectionsPagerAdapter.notifyDataSetChanged();
-                mViewPager.setVisibility(View.GONE);
-                mTabLayout.setVisibility(View.GONE);
-                frameLayout.setVisibility(View.VISIBLE);
-                return false;
-            }
-        });
+        getMenuInflater().inflate(R.menu.menu_main1, menu);
         return true;
     }
 
@@ -136,63 +82,18 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            overridePendingTransition(0,0); //0 for no animation
+
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        List<SearchItems> items = new ArrayList<>();
-        private SparseArray<SearchFragment> fragmentReference = new SparseArray<>();
-
-
-        public SectionsPagerAdapter(FragmentManager fm, List<SearchItems> results) {
-            super(fm);
-            items = results;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            SearchFragment fragment = SearchFragment.newInstance(items.get(position).getItems());
-            fragmentReference.put(position, fragment);
-            return fragment;
-        }
-
-        public void addItems(List<SearchItems> items) {
-            for(int i = 0; i < items.size(); i++) {
-                if(items.get(i).getItems() != null) {
-                    if(fragmentReference.get(i) != null) {
-                        fragmentReference.get(i).addData(items.get(i).getItems());
-                    }
-                    else {
-                        Log.e("Arpit", "why is this null??");
-                    }
-                }
-            }
-        }
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return items.size();
-        }
-
-        public void clear(){
-            items.clear();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return items.get(position).getCategory();
-        }
-    }
 
     @Override
     public void onBackPressed() {

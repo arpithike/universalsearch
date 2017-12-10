@@ -16,7 +16,7 @@ import in.hike.arpit.universalsearch.pojo.Item;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class SearchFragment extends Fragment {
+public class FeedFragment extends Fragment {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -26,15 +26,15 @@ public class SearchFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private List<Item> data = new ArrayList<>();
 
-    public SearchFragment() {
+    public FeedFragment() {
     }
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static SearchFragment newInstance(ArrayList<Item> data) {
-        SearchFragment fragment = new SearchFragment();
+    public static FeedFragment newInstance(ArrayList<Item> data) {
+        FeedFragment fragment = new FeedFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_DATA, data);
         fragment.setArguments(args);
